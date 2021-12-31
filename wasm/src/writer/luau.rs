@@ -22,12 +22,20 @@ use super::{
 	visit::{Transpiler, Writer},
 };
 
+fn write_i64(value: i64, w: Writer) -> Result<()> {
+	let inner = value.to_le_bytes();
+	let a = u32::from_le_bytes(inner[0..4].try_into().unwrap());
+	let b = u32::from_le_bytes(inner[4..8].try_into().unwrap());
+
+	write!(w, "new_i64({}, {}) ", a, b)
+}
+
 fn write_expression(code: &[Instruction], w: Writer) -> Result<()> {
 	// FIXME: Badly generated WASM will produce the wrong constant.
 	for inst in code {
 		let result = match *inst {
 			Instruction::I32Const(v) => write!(w, "{} ", v),
-			Instruction::I64Const(v) => write!(w, "{} ", v),
+			Instruction::I64Const(v) => write_i64(v, w),
 			Instruction::F32Const(v) => write_f32(f32::from_bits(v), w),
 			Instruction::F64Const(v) => write_f64(f64::from_bits(v), w),
 			Instruction::GetGlobal(i) => write!(w, "GLOBAL_LIST[{}].value ", i),
@@ -147,7 +155,7 @@ impl Driver for Value {
 	fn visit(&self, _: &mut Visitor, w: Writer) -> Result<()> {
 		match self {
 			Self::I32(i) => write!(w, "{} ", i),
-			Self::I64(i) => write!(w, "{} ", i),
+			Self::I64(i) => write_i64(*i, w),
 			Self::F32(f) => write_f32(*f, w),
 			Self::F64(f) => write_f64(*f, w),
 		}
@@ -718,13 +726,14 @@ impl<'a> Transpiler<'a> for Luau<'a> {
 
 	fn transpile(&self, w: Writer) -> Result<()> {
 		write!(w, "local rt = require(script.Runtime)")?;
+		write!(w, "local new_i64 = rt.new.i64 ")?;
 
 		let func_list = self.build_func_list();
 
 		Self::gen_localize(&func_list, w)?;
 
 		write!(w, "local ZERO_i32 = 0 ")?;
-		write!(w, "local ZERO_i64 = 0 ")?;
+		write!(w, "local ZERO_i64 = new_i64(0, 0) ")?;
 		write!(w, "local ZERO_f32 = 0.0 ")?;
 		write!(w, "local ZERO_f64 = 0.0 ")?;
 
