@@ -1,6 +1,5 @@
 local Numeric = {}
 
-local NUM_ZERO = Vector3.zero
 local NUM_ONE, NUM_SIX_FOUR
 
 local NUM_BIT_26, NUM_BIT_52
@@ -26,7 +25,9 @@ local num_is_less_unsigned
 -- Y: a[22..31]
 --  | b[0 ..11]
 -- Z: b[12..31]
-local constructor = Vector3.new
+local constructor = vector or Vector3.new
+
+local NUM_ZERO = constructor(0, 0, 0)
 
 function Numeric.from_u32(data_1, data_2)
 	local x = bit_and(data_1, 0x3FFFFF)
