@@ -148,15 +148,8 @@ impl Target for Luau {
 
 	fn write_runtime(w: &mut dyn Write) -> Result<()> {
 		let runtime = codegen_luau::RUNTIME;
-		let numeric = codegen_luau::NUMERIC;
 
-		writeln!(w, "local Integer = (function()")?;
-		write!(w, "{numeric}")?;
-		writeln!(w, "end)()")?;
-		writeln!(w, "local rt = (function()")?;
 		write!(w, "{runtime}")?;
-		writeln!(w, "end)()")?;
-
 		writeln!(w, "{ASSERTION}")
 	}
 

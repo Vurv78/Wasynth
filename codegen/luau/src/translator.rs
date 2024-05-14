@@ -97,7 +97,7 @@ fn write_import_list(list: &[Import], w: &mut dyn Write) -> Result<()> {
 }
 
 fn write_export_list(list: &[Export], w: &mut dyn Write) -> Result<()> {
-	writeln!(w, "\t\trt = rt,")?;
+	writeln!(w, "{}", crate::EXPORT_RUNTIME)?;
 	write_export_of(list, External::Func, w)?;
 	write_export_of(list, External::Table, w)?;
 	write_export_of(list, External::Memory, w)?;
@@ -131,7 +131,7 @@ fn write_memory_list(wasm: &Module, w: &mut dyn Write) -> Result<()> {
 		let min = ty.initial;
 		let max = ty.maximum.unwrap_or(0xFFFF);
 
-		writeln!(w, "\tMEMORY_LIST[{index}] = rt.allocator.new({min}, {max})")?;
+		writeln!(w, "\tMEMORY_LIST[{index}] = rt_allocator_new({min}, {max})")?;
 	}
 
 	Ok(())
@@ -206,7 +206,7 @@ fn write_data_list(list: &[Data], type_info: &TypeInfo, w: &mut dyn Write) -> Re
 			} => (memory_index, offset_expr),
 		};
 
-		write!(w, "\trt.store.string(MEMORY_LIST[{index}], ")?;
+		write!(w, "\trt_store_string(MEMORY_LIST[{index}], ")?;
 		write_constant(&init, type_info, w)?;
 		writeln!(w, r#","{}")"#, data.data.escape_ascii())?;
 	}
@@ -223,20 +223,6 @@ fn build_func_list(wasm: &Module, type_info: &TypeInfo) -> Vec<FuncData> {
 		.enumerate()
 		.map(|f| builder.create_indexed(f.0 + offset, f.1).unwrap())
 		.collect()
-}
-
-fn write_local_operation(head: &str, tail: &str, w: &mut dyn Write) -> Result<()> {
-	write!(w, "local {head}_{tail} = ")?;
-
-	match (head, tail) {
-		("abs" | "ceil" | "floor" | "sqrt", _) => write!(w, "math.{head}"),
-		("band" | "bor" | "bxor" | "bnot", "i32") => write!(w, "bit32.{head}"),
-		("clz", "i32") => write!(w, "bit32.countlz"),
-		("ctz", "i32") => write!(w, "bit32.countrz"),
-		_ => write!(w, "rt.{head}.{tail}"),
-	}?;
-
-	writeln!(w)
 }
 
 fn write_localize_used(
@@ -261,10 +247,6 @@ fn write_localize_used(
 	for (loc, mem) in func_list.iter().map(localize::visit) {
 		loc_set.extend(loc);
 		mem_set.extend(mem);
-	}
-
-	for loc in loc_set {
-		write_local_operation(loc.0, loc.1, w)?;
 	}
 
 	for mem in &mem_set {
