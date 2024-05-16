@@ -51,11 +51,10 @@ local function rt_i64_from_u64(value)
 	return rt_i64_from_u32(bit_and(value % 0x100000000), bit_and(value / 0x100000000))
 end
 
-local function rt_f64_into_u64(value)
+local function rt_convert_f32_u64(value)
 	local value_1, value_2 = rt_i64_into_u32(value)
 	return value_1 + value_2 * 0x100000000
 end
-local rt_convert_f32_u64 = rt_f64_into_u64
 
 local rt_i64_ONE = rt_i64_from_u64(1)
 local NUM_SIX_FOUR = rt_i64_from_u64(64)
@@ -245,7 +244,7 @@ local function rt_i64_negate(value)
 	return rt_i64_from_u32(data_1, data_2)
 end
 
-local function rt_i64_divide_signed(lhs, rhs)
+local function rt_div_i64(lhs, rhs)
 	local left_negative = rt_i64_is_negative(lhs)
 	local right_negative = rt_i64_is_negative(rhs)
 
@@ -407,8 +406,6 @@ local math_round = math.round
 local math_sign = math.sign
 local math_min = math.min
 local math_max = math.max
-
-local rt_div_i64 = rt_i64_divide_signed
 
 local function rt_add_i32(lhs, rhs)
 	return bit_or(lhs + rhs, 0)
