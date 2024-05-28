@@ -51,7 +51,7 @@ local function rt_i64_from_u64(value)
 	return rt_i64_from_u32(bit_and(value % 0x100000000), bit_and(value / 0x100000000))
 end
 
-local function rt_convert_f32_u64(value)
+local function rt_convert_f64_u64(value)
 	local value_1, value_2 = rt_i64_into_u32(value)
 	return value_1 + value_2 * 0x100000000
 end
@@ -192,8 +192,8 @@ local function rt_div_u64(lhs, rhs)
 	elseif rt_i64_is_zero(lhs) then
 		return rt_i64_ZERO, rt_i64_ZERO
 	elseif rt_lt_u64(lhs, NUM_BIT_52) and rt_lt_u64(rhs, NUM_BIT_52) then
-		local lhs_u = rt_convert_f32_u64(lhs)
-		local rhs_u = rt_convert_f32_u64(rhs)
+		local lhs_u = rt_convert_f64_u64(lhs)
+		local rhs_u = rt_convert_f64_u64(rhs)
 
 		return rt_i64_from_u64(lhs_u / rhs_u), rt_i64_from_u64(lhs_u % rhs_u)
 	end
@@ -393,7 +393,7 @@ local function rt_gt_i64(lhs, rhs)
 	end
 end
 
-local function rt_convert_f32_i32(num)
+local function rt_convert_f64_i32(num)
 	return bit_xor(num, 0x80000000) - 0x80000000
 end
 
@@ -434,8 +434,8 @@ end
 local function rt_div_i32(lhs, rhs)
 	assert(rhs ~= 0, "division by zero")
 
-	lhs = rt_convert_f32_i32(lhs)
-	rhs = rt_convert_f32_i32(rhs)
+	lhs = rt_convert_f64_i32(lhs)
+	rhs = rt_convert_f64_i32(rhs)
 
 	return bit_or(math_modf(lhs / rhs), 0)
 end
@@ -449,8 +449,8 @@ end
 local function rt_rem_i32(lhs, rhs)
 	assert(rhs ~= 0, "division by zero")
 
-	lhs = rt_convert_f32_i32(lhs)
-	rhs = rt_convert_f32_i32(rhs)
+	lhs = rt_convert_f64_i32(lhs)
+	rhs = rt_convert_f64_i32(rhs)
 
 	return bit_or(math_fmod(lhs, rhs), 0)
 end
@@ -560,19 +560,19 @@ local function rt_popcnt_i64(num)
 end
 
 local function rt_le_i32(lhs, rhs)
-	return rt_convert_f32_i32(lhs) <= rt_convert_f32_i32(rhs)
+	return rt_convert_f64_i32(lhs) <= rt_convert_f64_i32(rhs)
 end
 
 local function rt_lt_i32(lhs, rhs)
-	return rt_convert_f32_i32(lhs) < rt_convert_f32_i32(rhs)
+	return rt_convert_f64_i32(lhs) < rt_convert_f64_i32(rhs)
 end
 
 local function rt_ge_i32(lhs, rhs)
-	return rt_convert_f32_i32(lhs) >= rt_convert_f32_i32(rhs)
+	return rt_convert_f64_i32(lhs) >= rt_convert_f64_i32(rhs)
 end
 
 local function rt_gt_i32(lhs, rhs)
-	return rt_convert_f32_i32(lhs) > rt_convert_f32_i32(rhs)
+	return rt_convert_f64_i32(lhs) > rt_convert_f64_i32(rhs)
 end
 
 local function rt_ne_i64(lhs, rhs)
@@ -770,9 +770,9 @@ local function rt_convert_f64_i64(num)
 	if rt_i64_is_negative(num) then
 		local temp = rt_i64_negate(num)
 
-		return -rt_convert_f32_u64(temp)
+		return -rt_convert_f64_u64(temp)
 	else
-		return rt_convert_f32_u64(num)
+		return rt_convert_f64_u64(num)
 	end
 end
 
