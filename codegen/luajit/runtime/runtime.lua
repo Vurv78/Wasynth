@@ -782,7 +782,7 @@ do
 	end
 
 	function allocator.new(min, max)
-		local data = ffi.C.calloc(max, WASM_PAGE_SIZE)
+		local data = ffi.C.calloc(min, WASM_PAGE_SIZE)
 
 		assert(data ~= nil, "failed to allocate")
 
