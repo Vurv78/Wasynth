@@ -72,7 +72,7 @@ impl IntoNameTuple for UnOpType {
 			Self::Sqrt_F64 => ("math", "sqrt"),
 			Self::Wrap_I32_I64 => ("rt_wrap", "i32_i64"),
 			Self::Truncate_I32_F32 => ("rt_truncate", "i32_f32"),
-			Self::Truncate_I32_F64 => ("rt_truncate", "i32_f64"),
+			Self::Truncate_I32_F64 => ("rt_truncate", "u32_f64"),
 			Self::Truncate_U32_F32 => ("rt_truncate", "u32_f32"),
 			Self::Truncate_U32_F64 => ("rt_truncate", "u32_f64"),
 			Self::Truncate_I64_F32 => ("rt_truncate", "i64_f32"),
