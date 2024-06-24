@@ -72,7 +72,7 @@ impl Driver for LoadAt {
 		let name = self.load_type().into_name();
 		let memory = self.memory();
 
-		write!(w, "load_{name}(memory_at_{memory}, ")?;
+		write!(w, "rt_load_{name}(memory_at_{memory}, ")?;
 		self.pointer().write(mng, w)?;
 
 		if self.offset() != 0 {
@@ -85,7 +85,7 @@ impl Driver for LoadAt {
 
 impl Driver for MemorySize {
 	fn write(&self, _mng: &mut Manager, w: &mut dyn Write) -> Result<()> {
-		write!(w, "rt.allocator.size(memory_at_{})", self.memory())
+		write!(w, "rt_allocator_size(memory_at_{})", self.memory())
 	}
 }
 
@@ -97,14 +97,14 @@ pub fn write_i32(number: i32, w: &mut dyn Write) -> Result<()> {
 
 fn write_i64(number: i64, w: &mut dyn Write) -> Result<()> {
 	match number {
-		0 => write!(w, "i64_ZERO"),
-		1 => write!(w, "i64_ONE"),
+		0 => write!(w, "rt_i64_ZERO"),
+		1 => write!(w, "rt_i64_ONE"),
 		_ => {
 			let list = number.to_ne_bytes();
 			let a = u32::from_ne_bytes(list[0..4].try_into().unwrap());
 			let b = u32::from_ne_bytes(list[4..8].try_into().unwrap());
 
-			write!(w, "i64_from_u32({a}, {b})")
+			write!(w, "rt_i64_from_u32({a}, {b})")
 		}
 	}
 }

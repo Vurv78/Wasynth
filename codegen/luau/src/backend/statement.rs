@@ -291,7 +291,7 @@ impl Driver for StoreAt {
 		let name = self.store_type().into_name();
 		let memory = self.memory();
 
-		write!(w, "store_{name}(memory_at_{memory}, ")?;
+		write!(w, "rt_store_{name}(memory_at_{memory}, ")?;
 
 		self.pointer().write(mng, w)?;
 
@@ -310,7 +310,7 @@ impl Driver for MemoryGrow {
 		let memory = self.memory();
 
 		self.result().write(mng, w)?;
-		write!(w, " = rt.allocator.grow(memory_at_{memory}, ")?;
+		write!(w, " = rt_allocator_grow(memory_at_{memory}, ")?;
 		self.size().write(mng, w)?;
 		write!(w, ")")
 	}
@@ -321,7 +321,7 @@ impl Driver for MemoryCopy {
 		let memory_1 = self.destination().memory();
 		let memory_2 = self.source().memory();
 
-		write!(w, "rt.store.copy(memory_at_{memory_1}, ")?;
+		write!(w, "rt_store_copy(memory_at_{memory_1}, ")?;
 		self.destination().pointer().write(mng, w)?;
 		write!(w, ", memory_at_{memory_2}, ")?;
 		self.source().pointer().write(mng, w)?;
@@ -335,7 +335,7 @@ impl Driver for MemoryFill {
 	fn write(&self, mng: &mut Manager, w: &mut dyn Write) -> Result<()> {
 		let memory = self.destination().memory();
 
-		write!(w, "rt.store.fill(memory_at_{memory}, ")?;
+		write!(w, "rt_store_fill(memory_at_{memory}, ")?;
 		self.destination().pointer().write(mng, w)?;
 		write!(w, ", ")?;
 		self.size().write(mng, w)?;
@@ -379,7 +379,7 @@ fn write_parameter_list(ast: &FuncData, w: &mut dyn Write) -> Result<()> {
 const fn type_to_zero(typ: ValType) -> &'static str {
 	match typ {
 		ValType::F32 | ValType::F64 => "0.0",
-		ValType::I64 => "i64_ZERO",
+		ValType::I64 => "rt_i64_ZERO",
 		_ => "0",
 	}
 }
