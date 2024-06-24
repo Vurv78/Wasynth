@@ -92,7 +92,7 @@ impl Manager {
 	}
 
 	pub fn get_table_index(&self, table: &BrTable) -> usize {
-		let id = table as *const _ as usize;
+		let id = std::ptr::from_ref(table) as usize;
 
 		self.table_map[&id]
 	}

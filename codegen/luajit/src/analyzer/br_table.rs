@@ -15,7 +15,7 @@ impl Visitor for Visit {
 			return;
 		}
 
-		let id = table as *const _ as usize;
+		let id = std::ptr::from_ref(table) as usize;
 		let len = self.id_map.len() + 1;
 
 		self.id_map.insert(id, len);

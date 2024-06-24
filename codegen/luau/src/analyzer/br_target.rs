@@ -38,7 +38,7 @@ impl Visitor for Visit {
 			self.set_branch(target);
 		}
 
-		let id = table as *const _ as usize;
+		let id = std::ptr::from_ref(table) as usize;
 		let len = self.br_map.len() + 1;
 
 		self.br_map.insert(id, len);
