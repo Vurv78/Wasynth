@@ -490,12 +490,13 @@ impl<'a> Factory<'a> {
 			}
 			Operator::CallIndirect {
 				type_index,
-				table_byte,
+				table_index,
 				..
 			} => {
-				let index = type_index.try_into().unwrap();
+				let type_index = type_index.try_into().unwrap();
+				let table_index = table_index.try_into().unwrap();
 
-				self.add_call_indirect(index, table_byte.into());
+				self.add_call_indirect(type_index, table_index);
 			}
 			Operator::Drop => {
 				self.target.stack.pop();
