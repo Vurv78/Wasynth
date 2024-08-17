@@ -397,7 +397,7 @@ fn write_variable_list(ast: &FuncData, mng: &Manager, w: &mut dyn Write) -> Resu
 	if !temporaries.is_empty() {
 		let len = temporaries.len();
 
-		line!(mng, w, "local reg_spill = table.create({len})")?;
+		line!(mng, w, "local reg_spill = table_new({len}, 0)")?;
 	}
 
 	Ok(())
