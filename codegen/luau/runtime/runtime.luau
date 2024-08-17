@@ -507,7 +507,7 @@ end
 local function rt_nearest_f32(num)
 	local result = math_round(num)
 
-	if (math_abs(num) + 0_5) % 2 == 1 then
+	if (math_abs(num) + 0.5) % 2 == 1 then
 		return result - math_sign(result)
 	else
 		return result
